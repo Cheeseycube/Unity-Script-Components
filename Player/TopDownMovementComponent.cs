@@ -11,10 +11,11 @@ public class TopDownMovementComponent : MonoBehaviour
     float verticalInput;
     float moveLimiter = 0.7f;
     [SerializeField] private float movementSpeed = 8f;
-    private bool PlayerDead = false;
+    private bool MovementDisabled = false;
     // Start is called before the first frame update
     void Start()
     {
+        Application.targetFrameRate = 60;
         // initializing the rigidbody
         rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = 0;
@@ -30,7 +31,7 @@ public class TopDownMovementComponent : MonoBehaviour
         verticalInput = Input.GetAxisRaw("Vertical");
 
         // Player Death
-        if (PlayerDead)
+        if (MovementDisabled)
         {
             rb.velocity = Vector2.zero;
             return;
@@ -53,7 +54,7 @@ public class TopDownMovementComponent : MonoBehaviour
     public void DisableMovement()
     {
         rb.velocity = Vector2.zero;
-        PlayerDead = true;
+        MovementDisabled = true;
     }
 
     private void move()
@@ -64,6 +65,42 @@ public class TopDownMovementComponent : MonoBehaviour
 
     private void moveAddForce()
     {
+        // movement with this method feels a little worse, but it avoids setting velocity directly
         rb.AddForce(new Vector2(horizontalInput * 80, verticalInput * 80));
+    }
+
+
+    // Rotates the sprite based off mouse position--currently flips left or right only
+    private void RotateSprite()
+    {
+        Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector2 direction = mousePosition - transform.position;
+        angle = Vector2.SignedAngle(Vector2.right, direction);
+        transform.eulerAngles = new Vector3(0, 0, angle);
+        if (Mathf.Abs(angle) > 150)
+        {
+            // facing left
+            gameObject.transform.localScale = new Vector2(gameObject.transform.localScale.x, -0.3f);
+        }
+        else if (Mathf.Abs(angle) < 40)
+        {
+            // facing right
+            gameObject.transform.localScale = new Vector2(gameObject.transform.localScale.x, 0.3f);
+        }
+
+    }
+
+    // Flips the sprite on the y axis based off the player's movement direction
+    private void FlipSprite()  
+    {
+        if (rb.velocity.x < 0) // made this velocity based instead
+        {
+            gameObject.transform.localScale = new Vector2(-0.3f, gameObject.transform.localScale.y);
+        }
+        else if (rb.velocity.x > 0)
+        {
+            gameObject.transform.localScale = new Vector2(0.3f, gameObject.transform.localScale.y);
+        }
+
     }
 }

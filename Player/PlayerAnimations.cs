@@ -62,16 +62,7 @@ public class PlayerAnimations : MonoBehaviour
 
 
     Animator myAnim;
-    // This allows us to replace the animation clips at runtime
-    [SerializeField] private AnimatorOverrideController animationsOverrideSword;
-    [SerializeField] private AnimatorOverrideController animationsOverrideFist;
-    [SerializeField] private AnimatorOverrideController animationsOverrideIce;
-    [SerializeField] private AnimatorOverrideController animationsOverrideFire;
-    [SerializeField] private AnimatorOverrideController animationsOverrideLightning;
-    [SerializeField] private AnimatorOverrideController animationsOverrideCrit;
-    //[SerializeField] private AnimatorOverrideController animationsOverrideAxe;
-
-
+    
     // Start is called before the first frame updates
     void Start()
     {
@@ -224,72 +215,6 @@ public class PlayerAnimations : MonoBehaviour
             priority.Remove(AnimationStates.DashVertical);
         }
     }
-
-    // Sets the override to sword animations--referenced in the SwordPickup script
-    // References GameManager to set the player type to sword
-    // The playertype variable is itself referenced in AttackManager to determine
-    // how much damage the player does on mouse1
-    public void SwordOverride()
-    {
-        myAnim.runtimeAnimatorController = animationsOverrideSword;
-        FindObjectOfType<GameManager>().SetPlayerType(0);
-    }
-
-    // Sets the override to fist animations--referenced in the GameManager script to initialize the player
-    // with no weapons on death
-    // References GameManager to set the player type to fist
-    // see above for playerType explanation
-    public void FistOverride()
-    {
-        myAnim.runtimeAnimatorController = animationsOverrideFist;
-        FindObjectOfType<GameManager>().SetPlayerType(1);
-    }
-
-    // Sets the override to ice animations--referenced in the SwordPickup script
-    // References GameManager to set the player type to ice
-    // see above for playerType explanation
-    public void IceOverride()
-    {
-        myAnim.runtimeAnimatorController = animationsOverrideIce;
-        FindObjectOfType<GameManager>().SetPlayerType(2);
-    }
-
-    // Sets the override to fire animations--referenced in the SwordPickup script
-    // References GameManager to set the player type to fire
-    // see above for playerType explanation
-    public void FireOverride()
-    {
-        myAnim.runtimeAnimatorController = animationsOverrideFire;
-        FindObjectOfType<GameManager>().SetPlayerType(3);
-    }
-
-    // Sets the override to lightning animations--referenced in the SwordPickup script
-    // References GameManager to set the player type to lightning
-    // see above for playerType explanation
-    public void LightningOverride()
-    {
-        myAnim.runtimeAnimatorController = animationsOverrideLightning;
-        FindObjectOfType<GameManager>().SetPlayerType(4);
-    }
-
-    // Sets the override to crit animations--referenced in the SwordPickup script
-    // References GameManager to set the player type to crit
-    // see above for playerType explanation
-    public void CritOverride()
-    {
-        myAnim.runtimeAnimatorController = animationsOverrideCrit;
-        FindObjectOfType<GameManager>().SetPlayerType(0);
-    }
-
-    /*
-    public void AxeOverride()
-    {
-        myAnim.runtimeAnimatorController = animationsOverrideAxe;
-        FindObjectOfType<GameManager>().SetPlayerType(6);
-    }
-    */
-
-
 
 
 }
