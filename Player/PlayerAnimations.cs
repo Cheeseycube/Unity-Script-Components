@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 
 // This script controls which animations are active for the player at any given time
-// Remove the override stuff at some point...
+// For overrides see the override version of this script
 
 public class PlayerAnimations : MonoBehaviour
 {
@@ -44,7 +44,7 @@ public class PlayerAnimations : MonoBehaviour
     {
         [AnimationStates.IdleSide] = 0,
         [AnimationStates.WalkingSide] = 1,
-        [AnimationStates.WalkingNorth] = 2,  // made these all unique just in case
+        [AnimationStates.WalkingNorth] = 2,  // make these all unique just in case
         [AnimationStates.WalkingSouth] = 3,
         [AnimationStates.BasicAttackSide] = 4,
         [AnimationStates.BasicAttackSouth] = 5,
@@ -77,17 +77,7 @@ public class PlayerAnimations : MonoBehaviour
     // Update is called once per frame   
     void Update()
     {
-        // only uncomment this below code for testing purposes
-
-        /*if (Input.GetKeyDown(KeyCode.J)){
-            SwordOverride();
-        }
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            FistOverride();
-        }*/
-
-
+        
         // this is where the animation states get set
         AnimationStates newState;
 
@@ -151,7 +141,7 @@ public class PlayerAnimations : MonoBehaviour
 
     }
 
-    // Sets the animation state to a generic side attack--the given override determines the specifics
+    // Sets the animation state to a generic side attack
     public void SetBasicSideAttackAnimationState(bool isAttacking)
     {
         if (isAttacking)
@@ -164,7 +154,7 @@ public class PlayerAnimations : MonoBehaviour
         }
     }
 
-    // Sets the animation state to a generic south attack--the given override determines the specifics
+    // Sets the animation state to a generic south attack
     public void SetBasicSouthAttackAnimationState(bool isAttacking)
     {
         if (isAttacking)
@@ -177,7 +167,7 @@ public class PlayerAnimations : MonoBehaviour
         }
     }
 
-    // Sets the animation state to a generic north attack--the given override determines the specifics
+    // Sets the animation state to a generic north attack
     public void SetBasicNorthAttackAnimationState(bool isAttacking)
     {
         if (isAttacking)
@@ -190,7 +180,7 @@ public class PlayerAnimations : MonoBehaviour
         }
     }
 
-    // Sets the animation state to the side dashing animation--this is the same for all overrides
+    // Sets the animation state to the side dashing animation
     public void SetSideDashAnimationState(bool isDashing)
     {
         if (isDashing)
@@ -203,7 +193,7 @@ public class PlayerAnimations : MonoBehaviour
         }
     }
 
-    // Sets the animation state to the vertical dashing animation-- this is the same for all overrides
+    // Sets the animation state to the vertical dashing animation
     public void SetVerticalDashAnimationState(bool isDashing)
     {
         if (isDashing)
