@@ -32,10 +32,12 @@ public class WalkableTile : BaseTile
             path =  FindObjectOfType<PathFinder>().Dijkstra(FindObjectOfType<PlayerPathFinder>().GetPlayerPos(),
                 ((int)transform.position.x, (int)transform.position.y));
 
+            //print("path destination: " + transform.position.x + " " + transform.position.y);
             foreach (var tilePosition in path)
             {
                 TileManager.WalkableTilePositions[tilePosition].GetComponent<SpriteRenderer>().color = Color.gray;
             }
+            //print("Path end");
         }
     }
 

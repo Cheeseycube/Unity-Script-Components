@@ -25,7 +25,8 @@ public class TileManager : MonoBehaviour
         foreach (var tile in all_Walkable_Tiles)
         {
             (int, int) orderedPair = ((int)tile.transform.position.x, (int)tile.transform.position.y);
-            // storing orderedPairs and their corresponding gameObjects
+            //print(orderedPair);
+            // storing orderedPairs (offset by 0.5) and their corresponding gameObjects
             WalkableTilePositions.Add(orderedPair, tile);
         }
     }

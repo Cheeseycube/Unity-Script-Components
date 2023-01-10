@@ -7,7 +7,7 @@ using UnityEngine;
 public class PathFinder : MonoBehaviour
 {
     // this list of gameobjects contains all of the tiles: see Start() for initialization
-    private GameObject[] allTiles;
+    private GameObject[] allWalkableTiles;
     
     // This represents the underlying graph structure that Dijsktra's is based off of
     private Dictionary<(int, int), List<(int, int)>> graph = new Dictionary<(int, int), List<(int, int)>>();
@@ -132,7 +132,7 @@ public class PathFinder : MonoBehaviour
             node.Value.prev = null;
         }
 
-        foreach (var tile in allTiles)
+        foreach (var tile in allWalkableTiles)
         {
             tile.GetComponent<SpriteRenderer>().color = Color.white;
         }
@@ -180,13 +180,13 @@ public class PathFinder : MonoBehaviour
     {
         
         // initial setup: finding all the walkable tiles in the scene and adding them to the appropriate data structures
-        allTiles = GameObject.FindGameObjectsWithTag("Walkable");
-        foreach (GameObject tile in allTiles)
+        allWalkableTiles = GameObject.FindGameObjectsWithTag("Walkable");
+        foreach (GameObject tile in allWalkableTiles)
         {
             numNodes++;
-            
             // storing orderedPairs and their corresponding distances (infinity for now) in the map of nodes
             (int, int) orderedPair = ((int)tile.transform.position.x, (int)tile.transform.position.y);
+            //print(orderedPair);
             nodeData.Add(orderedPair, new Node(orderedPair, Int32.MaxValue, null));
             //print(orderedPair);
             //tile.GetComponent<SpriteRenderer>().color = Color.yellow;
@@ -232,6 +232,6 @@ public class PathFinder : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+       
     }
 }
