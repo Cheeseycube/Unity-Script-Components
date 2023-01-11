@@ -5,14 +5,14 @@ using UnityEngine;
 
 public abstract class BaseTile : MonoBehaviour
 {
-    private (int, int) location;
+    private Vector2Int location;
     private SpriteRenderer tileSprite;
     
     
     private void Start()
     {
         tileSprite = GetComponent<SpriteRenderer>();
-        location = ((int)transform.position.x, (int)transform.position.y);
+        location = new Vector2Int((int)transform.position.x, (int)transform.position.y);
     }
 
     public void SetSprite(Sprite givenSprite)
@@ -20,7 +20,7 @@ public abstract class BaseTile : MonoBehaviour
         tileSprite.sprite = givenSprite;
     }
 
-    public (int, int) GetLocation()
+    public Vector2Int GetLocation()
     {
         return location;
     }

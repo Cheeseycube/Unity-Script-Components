@@ -8,7 +8,7 @@ public class TileManager : MonoBehaviour
 {
     
     // This is a map of ordered pairs and their corresponding tile gameObjects
-    public static Dictionary<(int, int), GameObject> WalkableTilePositions = new Dictionary<(int, int), GameObject>();
+    public static Dictionary<Vector2Int, GameObject> WalkableTilePositions = new Dictionary<Vector2Int, GameObject>();
     
     private GameObject[] all_Walkable_Tiles;
 
@@ -24,7 +24,7 @@ public class TileManager : MonoBehaviour
         all_Walkable_Tiles = GameObject.FindGameObjectsWithTag("Walkable");
         foreach (var tile in all_Walkable_Tiles)
         {
-            (int, int) orderedPair = ((int)tile.transform.position.x, (int)tile.transform.position.y);
+            Vector2Int orderedPair = new((int)tile.transform.position.x, (int)tile.transform.position.y);
             //print(orderedPair);
             // storing orderedPairs (offset by 0.5) and their corresponding gameObjects
             WalkableTilePositions.Add(orderedPair, tile);
@@ -41,10 +41,7 @@ public class TileManager : MonoBehaviour
             AllTiles = FindObjectsOfType<BaseTile>();
             foreach (BaseTile tile in AllTiles)
             {
-                if (tile.transform.position.x % 1 != 0 || tile.transform.position.y % 1 != 0)
-                {
-                    tile.transform.position = new Vector3((float)Math.Round(tile.transform.position.x, 0), (float)Math.Round(tile.transform.position.y, 0), 0);
-                }
+                tile.transform.position = new Vector3((float)Math.Round(tile.transform.position.x, 0), (float)Math.Round(tile.transform.position.y, 0), 0);
             }
         }
     }

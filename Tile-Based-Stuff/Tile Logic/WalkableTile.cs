@@ -25,12 +25,14 @@ public class WalkableTile : BaseTile
 
     private void OnMouseEnter()
     {
-        if (FindObjectOfType<TileManager>().MayFindPath)
+        TileManager tm = FindObjectOfType<TileManager>();
+        PathFinder pf = FindObjectOfType<PathFinder>();
+        PlayerPathFinder ppf = FindObjectOfType<PlayerPathFinder>();
+
+        if (tm.MayFindPath)
         {
             tileSprite.color = Color.gray;
-            List<(int, int)> path = new List<(int, int)>();
-            path =  FindObjectOfType<PathFinder>().Dijkstra(FindObjectOfType<PlayerPathFinder>().GetPlayerPos(),
-                ((int)transform.position.x, (int)transform.position.y));
+            List<Vector2Int> path = pf.Dijkstra(ppf.GetPlayerPos(), new Vector2Int((int)transform.position.x, (int)transform.position.y));
 
             //print("path destination: " + transform.position.x + " " + transform.position.y);
             foreach (var tilePosition in path)

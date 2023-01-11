@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -9,78 +10,64 @@ public class PathFinder : MonoBehaviour
     // this list of gameobjects contains all of the tiles: see Start() for initialization
     private GameObject[] allWalkableTiles;
     
-    // This represents the underlying graph structure that Dijsktra's is based off of
-    private Dictionary<(int, int), List<(int, int)>> graph = new Dictionary<(int, int), List<(int, int)>>();
     
     // This is a map of ordered pairs and their node counterparts that contains info such as distance from source
-    private Dictionary<(int, int), Node> nodeData = new Dictionary<(int, int), Node>();
+    private List<Node> nodeData = new();
 
     // list of visited nodes
-    private List<Node> visited = new List<Node>(); 
+    private List<Node> visited = new(); 
     
     // list of unvisited nodes--this should be a p-queue but instead I am going to sort it after each remove() call
-    private List<Node> unVisitedNodes = new List<Node>();
-
-    // number of nodes in the graph
-    private int numNodes = 0;
+    private List<Node> unVisitedNodes = new();
     
     
     // Dijkstra's algorithm
-    public List<(int, int)> Dijkstra((int, int) start, (int, int) destination)
+    public List<Vector2Int> Dijkstra(Vector2Int start, Vector2Int destination)
     {
+
+        Node startNode = nodeData.Find((n) => n.point == start);
+
         // setting the distance from the startingPosition to itself to 0
-        nodeData[start] = new Node(start, 0, null);
+        startNode.distance_from_source = 0;
         
         // adding the first node (start) to the queue
-        unVisitedNodes.Add(nodeData[start]);
+        unVisitedNodes.Add(startNode);
         
         // while there are still nodes to visit
         while (unVisitedNodes.Count != 0)
         {
-            // for use later
-            int newDistance = -1;
             
             // removing minimum
             unVisitedNodes.Sort();
             Node currNode = unVisitedNodes[0];
             unVisitedNodes.RemoveAt(0);
             
-            // skip if already visited
-            if (visited.Contains(currNode))
-            {
-                continue;
-            }
-            
             // updating visited
             visited.Add(currNode);
             
             // getting the adjacencies from the current node
-            List<(int, int)> adjList = graph[currNode.point];
+            List<Node> adjList = currNode.adjTo;
             
             // for each adj of the current node
-            foreach ((int, int) adj in adjList)
+            foreach (Node adj in adjList.Except(visited))
             {
-                // if current node has not been processesed
-                if (!visited.Contains(nodeData[adj]))
+                
+                //print("curr: " + currNode.point);
+                    
+                // finding the distance from current node to the given adjacency
+                //int newDistance = getDistance(currNode.point, adj); //always 1 under current conditions
+
+                // adding the current Node's distance to the start
+                int newDistance = currNode.distance_from_source + 1;
+
+                // if new distance is cheaper
+                if (newDistance < adj.distance_from_source)
                 {
-                     //print("curr: " + currNode.point);
-                    
-                    // finding the distance from current node to the given adjacency
-                    newDistance = getDistance(currNode.point, adj);
-
-                    // adding the current Node's distance to the start
-                    Node prevNode = nodeData[currNode.point];
-                    newDistance += prevNode.distance_from_source;
-
-                    // if new distance is cheaper
-                    if (newDistance < nodeData[adj].distance_from_source)
-                    {
-                        nodeData[adj].distance_from_source = newDistance;
-                        nodeData[adj].prev = currNode;
-                        unVisitedNodes.Add(nodeData[adj]);
-                    }
-                    
+                    adj.distance_from_source = newDistance;
+                    adj.prev = currNode;
+                    unVisitedNodes.Add(adj);
                 }
+                    
             }
 
             if (currNode.point == destination)
@@ -89,10 +76,10 @@ public class PathFinder : MonoBehaviour
             }
         }
 
-        List<(int, int)> path = new List<(int, int)>();
+        List<Vector2Int> path = new();
         path.Add(destination);
         
-        Node pathNode = nodeData[destination].prev;
+        Node pathNode = nodeData.Find(n=>n.point == destination).prev;
         if (pathNode == null)
         {
             print("path not found, highlighting destination");
@@ -107,15 +94,11 @@ public class PathFinder : MonoBehaviour
     }
     
     // utility function called in Dijkstra's
-    private int getDistance((int, int) point1, (int, int) point2)
+    private int getDistance(Vector2Int point1, Vector2Int point2)
     {
-        int x1 = point1.Item1;
-        int y1 = point1.Item2;
-        int x2 = point2.Item1;
-        int y2 = point2.Item2;
 
-        int xDist = Math.Abs(x1 - x2);
-        int yDist = Math.Abs(y1 - y2);
+        int xDist = Math.Abs(point1.x - point2.x);
+        int yDist = Math.Abs(point1.y - point2.y);
 
         int totalDist = xDist + yDist;
 
@@ -126,10 +109,10 @@ public class PathFinder : MonoBehaviour
     public void clearPath()
     {
         
-        foreach (var node in nodeData)
+        foreach (var node in (from node in nodeData where node.distance_from_source != int.MaxValue || node.prev != null select node))
         {
-            node.Value.distance_from_source = Int32.MaxValue;
-            node.Value.prev = null;
+            node.distance_from_source = Int32.MaxValue;
+            node.prev = null;
         }
 
         foreach (var tile in allWalkableTiles)
@@ -144,33 +127,34 @@ public class PathFinder : MonoBehaviour
     // Internal Node class used in Dijkstra's
     public class Node : IComparable
     {
-        public (int, int) point;
+        public Vector2Int point;
         public int distance_from_source;
         public Node prev;
+        public List<Node> adjTo = new();
 
-        public Node((int, int) point, int distanceFromSource, Node prev)
+        public Node(Vector2Int point, int distanceFromSource, Node prev, List<Node> adj)
         {
             this.point = point;
             this.distance_from_source = distanceFromSource;
             this.prev = prev;
+            adjTo = adj;
         }
     
         int IComparable.CompareTo(object b)
         {
-            Node _b = (Node) b;
-            if (this.distance_from_source < _b.distance_from_source)
-            {
-                return -1;
-            }
-
-            if (this.distance_from_source > _b.distance_from_source)
-            {
-                return 1;
-            }
-
-            return 0;
+            return distance_from_source - ((Node)b).distance_from_source;
         }
-    
+
+        public bool PartialEquals(Node oth)
+        {
+
+            bool pointcheck = oth.point.Equals(point);
+            bool distCheck = distance_from_source == oth.distance_from_source;
+            //bool prevCheck = oth.prev.Equals(this);   //likely infinitely recursive
+
+            return pointcheck && distCheck;
+
+        }
 
     }
     
@@ -183,39 +167,27 @@ public class PathFinder : MonoBehaviour
         allWalkableTiles = GameObject.FindGameObjectsWithTag("Walkable");
         foreach (GameObject tile in allWalkableTiles)
         {
-            numNodes++;
             // storing orderedPairs and their corresponding distances (infinity for now) in the map of nodes
-            (int, int) orderedPair = ((int)tile.transform.position.x, (int)tile.transform.position.y);
+            Vector2Int orderedPair = new((int)tile.transform.position.x, (int)tile.transform.position.y);
             //print(orderedPair);
-            nodeData.Add(orderedPair, new Node(orderedPair, Int32.MaxValue, null));
+            Node node = new(orderedPair, Int32.MaxValue, null, new());
+            nodeData.Add(node);
             //print(orderedPair);
             //tile.GetComponent<SpriteRenderer>().color = Color.yellow;
             
-            // storing the ordered pairs and their adjacencies (empty for now) in the graph
-            graph.Add(orderedPair, new List<(int, int)>());
             
         }
         
         // storing the adjacencies in the graph
-        foreach (var keyValuePair in graph)
+        foreach (var node in nodeData)
         {
-            (int, int) point = keyValuePair.Key;
-            keyValuePair.Value.Add(point);
-            if (graph.ContainsKey((point.Item1 + 1, point.Item2)))
+
+            foreach (var dir in new List<Vector2Int>() { Vector2Int.down, Vector2Int.left, Vector2Int.right, Vector2Int.up})
             {
-                keyValuePair.Value.Add((point.Item1 + 1, point.Item2));
-            }
-            if (graph.ContainsKey((point.Item1 - 1, point.Item2)))
-            {
-                keyValuePair.Value.Add((point.Item1 - 1, point.Item2));
-            }
-            if (graph.ContainsKey((point.Item1, point.Item2 + 1)))
-            {
-                keyValuePair.Value.Add((point.Item1, point.Item2 + 1));
-            }
-            if (graph.ContainsKey((point.Item1, point.Item2 - 1)))
-            {
-                keyValuePair.Value.Add((point.Item1, point.Item2 - 1));
+                Node directionNode = new(node.point + dir, int.MaxValue, null, new());
+                if (nodeData.Find((oth)=>directionNode.PartialEquals(oth)) != null) {
+                    node.adjTo.Add(directionNode);
+                }
             }
             
         }
@@ -229,9 +201,4 @@ public class PathFinder : MonoBehaviour
 
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-       
-    }
 }

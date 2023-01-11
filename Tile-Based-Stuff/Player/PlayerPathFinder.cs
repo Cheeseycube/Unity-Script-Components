@@ -16,8 +16,8 @@ public class PlayerPathFinder : MonoBehaviour
         
     }
 
-    public (int, int) GetPlayerPos() 
+    public Vector2Int GetPlayerPos() 
     {
-        return ((int)transform.position.x, (int)transform.position.y);
+        return new Vector2Int((int)transform.position.x, (int)transform.position.y);
     }
 }
