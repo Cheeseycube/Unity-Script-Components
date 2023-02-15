@@ -128,10 +128,7 @@ public class PlayerAnimations : MonoBehaviour
                 priority.Add(AnimationStates.IdleSide);
             }
         }
-        else
-        {
-            priority.Remove(AnimationStates.IdleSide);
-        }
+        
 
 
         // this is necessary stuff I don't touch
