@@ -13,6 +13,7 @@ public class Basic_Projectile : MonoBehaviour
     
     private void Start() {
         StartCoroutine(lifetimer());
+        //transform.Rotate(new Vector3(0f, 0f, RotationNum));  Useful sometimes
     }
 
     private void FixedUpdate()
